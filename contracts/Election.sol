@@ -13,9 +13,13 @@ contract Election {
     // Store Candidates
     // Fetch Candidate
     mapping(uint => Candidate) public candidates;
-
     // Store Candidates Count
     uint public candidatesCount;
+
+    // voted event
+    event votedEvent (
+        uint indexed _candidateId
+    );
 
     function Election () public {
         addCandidate("Candidate 1");
@@ -28,17 +32,19 @@ contract Election {
     }
 
     function vote (uint _candidateId) public {
-        // must not have voted before
+        // require that they haven't voted before
         require(!voters[msg.sender]);
-        
-        // check for valid candidate
-        require(_candidateId > 0 && _candidateId <= candidatesCount);    
-        // record that voter has voted
 
+        // require a valid candidate
+        require(_candidateId > 0 && _candidateId <= candidatesCount);
+
+        // record that voter has voted
         voters[msg.sender] = true;
 
-        //update Candidate vote Count
+        // update candidate vote Count
         candidates[_candidateId].voteCount ++;
-    }
 
+        // trigger voted event
+        votedEvent(_candidateId);
+    }
 }
